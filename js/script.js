@@ -1,6 +1,7 @@
 
 // 
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2';
+const API_KEY ='4265b75a9b2f0401612ea7be4cdfd747';
 const leftmenu = document.querySelector('.left-menu');
 const hamburger = document.querySelector('.hamburger');
 const tvShowsList = document.querySelector('.tv-shows__list');
@@ -43,9 +44,10 @@ const DBServise = class {
                 vote_average : vote
              } = element;
 
+            // create the img way
              const posterImg = poster ? IMG_URL + poster : './img/no-poster.jpg';
-             const backdropImg = ';'
-             const voteEl = ';'
+             const backdropImg = backdrop ? IMG_URL + backdrop : './img/no-poster.jpg';
+             const voteEl = '';
 
          const card = document.createElement('li');
          card.classList.add('tv-shows__item');
@@ -57,6 +59,11 @@ const DBServise = class {
               alt="${title}">
          <h4 class="tv-card__head">${title}</h4>
         </a>`;
+        
+        if(!vote){
+                  
+        };
+
         tvShowsList.append(card);
 
 
