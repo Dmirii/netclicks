@@ -47,12 +47,12 @@ const DBServise = class {
             // create the img way
              const posterImg = poster ? IMG_URL + poster : './img/no-poster.jpg';
              const backdropImg = backdrop ? IMG_URL + backdrop : './img/no-poster.jpg';
-             const voteEl = '';
+             const voteEl = vote ?  vote : '';
 
          const card = document.createElement('li');
          card.classList.add('tv-shows__item');
          card.innerHTML = `<a href="#" class="tv-card">
-         <span class="tv-card__vote">${vote}</span>
+         <span class="tv-card__vote">${voteEl}</span>
          <img class="tv-card__img"
               src="${posterImg}"
               data-backdrop="${IMG_URL + backdrop}"
