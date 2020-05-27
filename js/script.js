@@ -47,9 +47,7 @@ const DBServise = class {
             // create the img way
              const posterImg = poster ? IMG_URL + poster : './img/no-poster.jpg';
              const backdropImg = backdrop ? IMG_URL + backdrop : './img/no-poster.jpg';
-             const voteEl = vote ?  vote : '';
-
-             const voteEl = vote ? `<span class="tv-card__vote>${vote}</span> : '';
+             const voteEl = vote ?  `<span class="tv-card__vote">${vote}</span>` : '';
 
          const card = document.createElement('li');
          card.classList.add('tv-shows__item');
