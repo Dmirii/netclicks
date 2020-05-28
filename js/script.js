@@ -1,12 +1,26 @@
 
 // 
-const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2';
-const API_KEY ='4265b75a9b2f0401612ea7be4cdfd747';
-const leftmenu = document.querySelector('.left-menu');
-const hamburger = document.querySelector('.hamburger');
-const tvShowsList = document.querySelector('.tv-shows__list');
-modal = document.querySelector('.modal');
+const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2',
+       SERVER = 'https://api.themoviedb.org/3',
+      API_KEY ='4265b75a9b2f0401612ea7be4cdfd747',
 
+
+     leftmenu = document.querySelector('.left-menu'),
+    hamburger = document.querySelector('.hamburger'),
+  tvShowsList = document.querySelector('.tv-shows__list'),
+        modal = document.querySelector('.modal'),
+      tvShows = document.querySelector('.tv-shows'),
+    tvCardImg = document.querySelector('.tv-card__img'),
+   modalTitle = document.querySelector('.modal__title'),   
+   genersList = document.querySelector('.genres-list'),
+       rating = document.querySelector('.rating'),
+  description = document.querySelector('.description'), 
+  modalLink = document.querySelector('.modal__link'),
+  searchForm = document.querySelector('.search__form'),
+searchFormInput = document.querySelector('.search__form-input');
+
+const loading = document.createElement('div');
+      loading.className = 'loading';
 
 const DBServise = class {
 
@@ -26,7 +40,22 @@ const DBServise = class {
           return  this.getData('test.json');
       }
 
+      getTestCard = () => {
+        return  this.getData('card.json');
+      }
+
+      getSearchResuit = query => this // serch func
+      .getData(`${SERVER}/search/tv?api_key=${API_KEY}&query=${query}&language=ru-RU`);
+      
+
+      getTvShow = id =>this
+      .getData(SERVER + '/tv/' + id +'?api_key='+ API_KEY+ '&language=ru-RU');
+      
+
 }
+
+  console.log(new DBServise().getSearchResuit('няня'));
+ 
  const renderCard = response => {
 
      console.log(response);
@@ -41,31 +70,32 @@ const DBServise = class {
          const {backdrop_path : backdrop,
                         name : title ,
                  poster_path : poster ,
+                 id,
                 vote_average : vote
              } = element;
 
             // create the img way
              const posterImg = poster ? IMG_URL + poster : './img/no-poster.jpg';
-             const backdropImg = backdrop ? IMG_URL + backdrop : './img/no-poster.jpg';
+             const backdropImg = backdrop ? IMG_URL + backdrop : '';
              const voteEl = vote ?  `<span class="tv-card__vote">${vote}</span>` : '';
 
          const card = document.createElement('li');
+         card.idTv = id;// create new property
          card.classList.add('tv-shows__item');
-         card.innerHTML = `<a href="#" class="tv-card">
+         card.innerHTML = `<a href="#" id="${id}" class="tv-card">
          ${voteEl}
          <img class="tv-card__img"
               src="${posterImg}"
-              data-backdrop="${IMG_URL + backdrop}"
+              data-backdrop="${backdropImg}"
               alt="${title}">
          <h4 class="tv-card__head">${title}</h4>
         </a>`;
         
-        if(!vote){
-                  
-        };
+    
 
+
+        loading.remove();
         tvShowsList.append(card);
-
 
          console.log(card);
 
@@ -73,8 +103,21 @@ const DBServise = class {
      });
  }
 
-new DBServise().getTestData().then(renderCard);
+ searchForm.addEventListener('submit', event => {
+     event.preventDefault();
+     const value = searchFormInput.value.trim();// del space in the query
+     if(value){
+     tvShows.append(loading);
+     new DBServise().getSearchResuit(value).then(renderCard);
+     }
+     searchFormInput.value = '';
 
+
+ });
+{
+    tvShows.append(loading);
+    new DBServise().getTestData().then(renderCard);
+}
 
 
 
@@ -98,6 +141,7 @@ document.addEventListener('click', event => {
 });
 
 leftmenu.addEventListener('click', event => {
+    event.preventDefault;
     const target = event.target;
     const dropdown = target.closest('.dropdown');
     if(dropdown){
@@ -116,8 +160,28 @@ tvShowsList.addEventListener('click', () =>{
    const card = target.closest('.tv-card');
 
    if (card) {
-       document.body.style.overflow = 'hiden';
-       modal.classList.remove('hide');
+
+    new DBServise().getTvShow(card.id)
+        .then(response => {
+            tvCardImg.src = IMG_URL + response.poster_path;
+            tvCardImg.alt = response.name;
+            modalTitle.textContent = response.name;
+
+            genersList.textContent = ``;
+            for(const item of response.genres){
+                genersList.innerHTML +=  `<li>${item.name}</li>` ;
+
+            }
+            rating.textContent = response.vote_average;
+            description.textContent = response.overview;
+            modalLink.href =  response.homepage;           
+        })
+        .then( () => {
+            document.body.style.overflow = 'hiden';
+            modal.classList.remove('hide');
+        })
+
+      
    }
 
 });
